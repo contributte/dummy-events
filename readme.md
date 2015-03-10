@@ -28,7 +28,7 @@ extensions:
 
 ### Register events
 
-On Conter compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
+On Container compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
 
 ```php
 use Minetro\Events\EventsSubscriber;
@@ -62,6 +62,6 @@ public void save() {
     // Some logic..
     
     // Fire order update events
-    $this->ev->trigger('order.update', $order->state);
+    $this->em->trigger('order.update', $order->state);
 }
 ```
