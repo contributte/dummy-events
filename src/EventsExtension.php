@@ -3,7 +3,6 @@
 namespace Minetro\Events;
 
 use Nette\DI\CompilerExtension;
-use Nette\PhpGenerator\ClassType;
 
 /**
  * EventsExtension
@@ -42,14 +41,4 @@ class EventsExtension extends CompilerExtension
             $manager->addSetup('attach', [$def]);
         }
     }
-
-    /**
-     * Adjusts DI container compiled to PHP class. Intended to be overridden by descendant.
-     *
-     * @return void
-     */
-    public function afterCompile(ClassType $class)
-    {
-    }
-
 }
