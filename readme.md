@@ -8,6 +8,7 @@
 Simple events for Nette.
 
 ## Install
+
 ```sh
 $ composer require minetro/events:~1.0.0
 ```
@@ -16,7 +17,7 @@ $ composer require minetro/events:~1.0.0
 
 ### Register extension
 
-Register in your config file.
+Register in your config file (e.q. config.neon).
 
 ```neon
 extensions:
@@ -25,15 +26,15 @@ extensions:
 
 ### Register events
 
-In your class
-
 ```php
-
 use Minetro\Events\EventsSubscriber;
 use Minetro\Events\EventsManager;
 
 class TestService implements EventsSubscriber 
 {
+    /**
+      * @param EventsManager $em
+      */
     public function onEvents(EventsManager $em) {
         $em->on('order.update', function($state) {
             // Some logic..
@@ -44,7 +45,7 @@ class TestService implements EventsSubscriber
 
 ### Fire events
 
-Inject to your class **EventsManager**.
+Inject to your class ultra-simple **EventsManager**.
 
 ```php
 
