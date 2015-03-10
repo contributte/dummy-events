@@ -58,7 +58,7 @@ use Minetro\Events\EventsManager;
 /** @var EventsManager @inject **/
 public $em;
 
-public void save() {
+public function save() {
     // Some logic..
     
     // Fire order update events
