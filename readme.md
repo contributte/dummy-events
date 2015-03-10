@@ -28,6 +28,8 @@ extensions:
 
 ### Register events
 
+On compile Container extension collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
+
 ```php
 use Minetro\Events\EventsSubscriber;
 use Minetro\Events\EventsManager;
