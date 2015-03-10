@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+sh ../vendor/bin/tester Events -s -j 40 -log events.log $@
+rm "./tmp" -f -R
