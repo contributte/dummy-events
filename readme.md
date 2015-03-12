@@ -37,8 +37,8 @@ use Minetro\Events\EventsManager;
 class TestService implements EventsSubscriber 
 {
     /**
-      * @param EventsManager $em
-      */
+     * @param EventsManager $em
+     */
     public function onEvents(EventsManager $em) {
         $em->on('order.update', function($state) {
             // Some logic..
@@ -52,7 +52,6 @@ class TestService implements EventsSubscriber
 Inject to your class ultra-simple **EventsManager**.
 
 ```php
-
 use Minetro\Events\EventsManager;
 
 /** @var EventsManager @inject **/

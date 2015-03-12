@@ -2,6 +2,8 @@
 
 namespace Minetro\Events;
 
+use Nette\DI\Container;
+
 /**
  * EventsManager
  *
@@ -12,6 +14,22 @@ class EventsManager
 
     /** @var array */
     protected $listeners = [];
+
+    /** @var array */
+    protected $lazyListeners = [];
+
+    /** @var Container */
+    private $container;
+
+    /**
+     * @param Container $container
+     */
+    function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    /** API********************************************************************/
 
     /**
      * Register event
@@ -34,6 +52,14 @@ class EventsManager
         $args = func_get_args();
         array_shift($args);
 
+        if (isset($this->lazyListeners[$event])) {
+            foreach ($this->lazyListeners[$event] as $name) {
+                $this->attach($this->container->getService($name));
+            }
+
+            unset($this->lazyListeners[$event]);
+        }
+
         $listeners = isset($this->listeners[$event]) ? $this->listeners[$event] : [];
         foreach ($listeners as $listener) {
             call_user_func_array($listener, $args);
@@ -48,6 +74,19 @@ class EventsManager
     public function attach(EventsSubscriber $subscriber)
     {
         $subscriber->onEvents($this);
+    }
+
+    /**
+     * Attach lazy subscriber and register events
+     *
+     * @param array $tags
+     * @param string $service
+     */
+    public function attachLazy(array $tags, $service)
+    {
+        foreach ($tags as $tag => $value) {
+            $this->lazyListeners[$tag][] = $service;
+        }
     }
 
 }
