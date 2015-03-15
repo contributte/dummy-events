@@ -12,7 +12,7 @@ If you want complex events solution - there is **[Kdyby\Events](https://github.c
 ## Install
 
 ```sh
-$ composer require minetro/events:~1.0.0
+$ composer require minetro/events:~1.1.0
 ```
 
 ## Usage
@@ -45,6 +45,15 @@ class TestService implements EventsSubscriber
         });
     }
 }
+```
+
+### Register lazy events
+
+Name tag as event name.
+
+```neon
+services:
+    {class: TestService, tags: [order.update]}
 ```
 
 ### Fire events
