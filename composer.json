@@ -1,5 +1,5 @@
 {
-  "name": "minetro/events",
+  "name": "tomaskubat/events",
   "description": "Simple events for Nette",
   "type": "library",
   "license": ["BSD-3-Clause"],
@@ -8,10 +8,13 @@
     {
       "name": "Milan Felix Sulc",
       "homepage": "http://jfx.cz"
+    },
+    {
+      "name": "Tomas Kubat",
     }
   ],
   "require": {
-    "nette/di": ">=2.3.0,<2.4.0"
+    "nette/di": "~2.3.0"
   },
   "require-dev": {
     "nette/tester": "~1.3.0"
