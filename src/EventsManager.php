@@ -18,6 +18,9 @@ class EventsManager
     /** @var array */
     protected $lazyListeners = [];
 
+    /** @var array */
+    protected $lazyServicesAttached = [];
+
     /** @var Container */
     private $container;
 
@@ -53,8 +56,13 @@ class EventsManager
         array_shift($args);
 
         if (isset($this->lazyListeners[$event])) {
-            foreach ($this->lazyListeners[$event] as $name) {
+            foreach ($this->lazyListeners[$event] as $idx => $name) {
+                if (in_array($name, $this->lazyServicesAttached)) {
+                    unset($this->lazyListeners[$event][$idx]);
+                    continue;
+                }
                 $this->attach($this->container->getService($name));
+                $this->lazyServicesAttached[] = $name;
             }
 
             unset($this->lazyListeners[$event]);
