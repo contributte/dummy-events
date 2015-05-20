@@ -1,9 +1,10 @@
 # Events
 
-[![Build Status](https://travis-ci.org/minetro/events.svg?branch=master)](https://travis-ci.org/minetro/events)
-[![Downloads this Month](https://img.shields.io/packagist/dm/minetro/events.svg?style=flat)](https://packagist.org/packages/minetro/events)
-[![Latest stable](https://img.shields.io/packagist/v/minetro/events.svg?style=flat)](https://packagist.org/packages/minetro/events)
-[![HHVM Status](https://img.shields.io/hhvm/minetro/events.svg?style=flat)](http://hhvm.h4cc.de/package/minetro/events)
+[![Build Status](https://img.shields.io/travis/minetro/events.svg?style=flat-square)](https://travis-ci.org/minetro/events)
+[![Code coverage](https://img.shields.io/coveralls/minetro/events.svg?style=flat-square)](https://coveralls.io/r/minetro/events)
+[![Downloads this Month](https://img.shields.io/packagist/dm/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
+[![Latest stable](https://img.shields.io/packagist/v/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
+[![HHVM Status](https://img.shields.io/hhvm/minetro/events.svg?style=flat-square)](http://hhvm.h4cc.de/package/minetro/events)
 
 Simple events for Nette.
 
