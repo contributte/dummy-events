@@ -1,75 +1,134 @@
 # Events
 
-[![Build Status](https://travis-ci.org/minetro/events.svg?branch=master)](https://travis-ci.org/minetro/events)
-[![Downloads this Month](https://img.shields.io/packagist/dm/minetro/events.svg?style=flat)](https://packagist.org/packages/minetro/events)
-[![Latest stable](https://img.shields.io/packagist/v/minetro/events.svg?style=flat)](https://packagist.org/packages/minetro/events)
-[![HHVM Status](https://img.shields.io/hhvm/minetro/events.svg?style=flat)](http://hhvm.h4cc.de/package/minetro/events)
-
 Simple events for Nette.
 
-If you want complex events solution - there is **[Kdyby\Events](https://github.com/kdyby/events)** for you. 
+If you want try another events solution - there is **[Kdyby\Events](https://github.com/kdyby/events)** or **[minetro/events](https://github.com/minetro/events)** for you. 
 
 ## Install
 
-```sh
-$ composer require minetro/events:~1.1.0
+Register in your `composer,json`.
+
+```json
+# composer.json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/tomaskubat/events"
+    }
+],
+"require": {
+    ...,
+    "tomaskubat/events": "dev-master"
+},
 ```
 
 ## Usage
 
 ### Register extension
 
-Register in your config file (e.q. config.neon).
+Register in your config file (e.q. `config.neon`).
 
 ```neon
 extensions:
-    events: Minetro\Events\EventsExtension
+    events: TomasKubat\Nette\Events\EventsExtension
 ```
 
-### Register events
+### Register lazy monitors
 
-On Container compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
-
-```php
-use Minetro\Events\EventsSubscriber;
-use Minetro\Events\EventsManager;
-
-class TestService implements EventsSubscriber 
-{
-    /**
-     * @param EventsManager $em
-     */
-    public function onEvents(EventsManager $em) {
-        $em->on('order.update', function($state) {
-            // Some logic..
-        });
-    }
-}
-```
-
-### Register lazy events
-
-Name tag as event name.
+On Container compile - **EventsExtension** collect all services which implement **IEventMonitor** and make maps to callback methods from their tags.
 
 ```neon
 services:
-    {class: TestService, tags: [order.update]}
+    order:
+        class: App\Model\Order
+
+    orderMailerMonitor:
+        class: App\Model\OrderMailer
+        tags: [
+            event.create  = {callback: 'onOrderCreateEvent', context: 'App\Model\Order'}
+        ]
+
+    appLoggerMonitor:
+        class: App\Model\Logs\App\Monitor
+        tags: [
+            event.init    = {callback: 'onEvent', context: '*'}
+            event.create  = {callback: 'onEvent', context: '*'},
+            event.read    = {callback: 'onEvent', context: '*'},
+            event.update  = {callback: 'onEvent', context: '*'},
+            event.delete  = {callback: 'onEvent', context: '*'}
+        ]
 ```
+
+### Create monitors and callback methods
+
+```php
+namespace App\Model\Logs\App;
+
+use \TomasKubat\Nette\Events\IEventMonitor;
+
+class Monitor extends \Nette\Object implements IEventMonitor
+{
+
+    public function __construct()
+    {
+        // init procedure...
+    }
+
+    public function onEvent(IEvent $event)
+    {
+        // log procedure... $event->getName(), $event->getContext(), $event->getParameters()  
+    }
+
+}
+```
+
+```php
+namespace APP\Model;
+
+use \TomasKubat\Nette\Events\IEventMonitor;
+
+class OrderMailer extends \Nette\Object implements IEventMonitor
+
+    public function __construct()
+    {
+        // init procedure...
+    }
+
+    public function onOrderCreateEvent(\TomasKubat\Nette\Events\IEvent $event)
+    {
+        // mail procedure... $event->getName(), $event->getContext(), $event->getParameters()
+    }
+
+}
+```
+
 
 ### Fire events
 
-Inject to your class ultra-simple **EventsManager**.
+Inject to your class ultra-simple **EventManager**.
 
 ```php
-use Minetro\Events\EventsManager;
+namespace App\Model\Order;
 
-/** @var EventsManager @inject **/
-public $em;
+use \TomasKubat\Nette\Events\EventManager,
+    \TomasKubat\Nette\Events\Event;
 
-public function save() {
-    // Some logic..
+class EventCreator extends \Nette\Object
+{
+
+    /** @var EventManager */
+    private $em;
+
+    public function __construct(EventManager $em)
+    {
+        $this->em = $em;
+    }
     
-    // Fire order update events
-    $this->em->trigger('order.update', $order->state);
-}
+    public function save()
+    {
+        // save procedure
+        
+        $event = new Event('event.create', get_class(), ['orderId' => $order->id]);
+        $this->em->push($event);
+    }
 ```
