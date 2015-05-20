@@ -18,6 +18,9 @@ class EventsManager
     /** @var array */
     protected $lazyListeners = [];
 
+    /** @var array */
+    protected $attachedServices = [];
+
     /** @var Container */
     private $container;
 
@@ -54,11 +57,22 @@ class EventsManager
 
         if (isset($this->lazyListeners[$event])) {
             foreach ($this->lazyListeners[$event] as $name) {
+                // If service is already attached, skip it
+                if (in_array($name, $this->attachedServices)) {
+                    continue;
+                }
+
+                // Attach service events
                 $this->attach($this->container->getService($name));
+
+                // Add service to attached services
+                $this->attachedServices[] = $name;
             }
 
+            // Unset all lazy listeners from array, cause all listeners are already attached
             unset($this->lazyListeners[$event]);
         }
+
 
         $listeners = isset($this->listeners[$event]) ? $this->listeners[$event] : [];
         foreach ($listeners as $listener) {
@@ -79,13 +93,13 @@ class EventsManager
     /**
      * Attach lazy subscriber and register events
      *
-     * @param array $tags
+     * @param array $events
      * @param string $service
      */
-    public function attachLazy(array $tags, $service)
+    public function attachLazy(array $events, $service)
     {
-        foreach ($tags as $tag => $value) {
-            $this->lazyListeners[$tag][] = $service;
+        foreach ($events as $id => $event) {
+            $this->lazyListeners[$event][] = $service;
         }
     }
 

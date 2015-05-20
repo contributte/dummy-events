@@ -12,7 +12,7 @@ If you want complex events solution - there is **[Kdyby\Events](https://github.c
 ## Install
 
 ```sh
-$ composer require minetro/events:~1.1.0
+$ composer require minetro/events:~1.2.0
 ```
 
 ## Usage
@@ -49,11 +49,46 @@ class TestService implements EventsSubscriber
 
 ### Register lazy events
 
-Name tag as event name.
+Name tag as event name with prefix **event**.
 
 ```neon
 services:
-    {class: TestService, tags: [order.update]}
+    {class: TestService, tags: [event.order.update]}
+```
+
+Or use tag arrays with key name **events**.
+
+```neon
+services:
+    {class: TestService, tags: [events: [order.update]]}
+```
+
+This prevents usage of other tags.
+
+If **EventsSubscriber** register more events and also is lazy registered (by tags in neon). Implemented method
+`onEvents(EventsManager $em)` is called **only once**.
+
+```php
+use Minetro\Events\EventsSubscriber;
+use Minetro\Events\EventsManager;
+
+class TestSubscriber implements EventsSubscriber 
+{
+    
+    public function onEvents(EventsManager $em) {
+        $em->on('order.create', function($state) {
+            // Some logic..
+        });
+        
+        $em->on('order.update', function($state) {
+            // Some logic..
+        });
+        
+        $em->on('order.delete', function($state) {
+            // Some logic..
+        });
+    }
+}
 ```
 
 ### Fire events

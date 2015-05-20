@@ -1,53 +1,42 @@
 <?php
 
 /**
- * Test: EventsManager
+ * Test: EventsManager - lazy attaching
  */
 
-use Minetro\Events\EventsManager;
+use Minetro\Events\EventsExtension;
+use Nette\Configurator;
+use Nette\DI\Compiler;
 use Nette\DI\Container;
+use Nette\InvalidStateException;
 use Tester\Assert;
+use Tester\FileMock;
 
 require __DIR__ . '/../bootstrap.php';
-
-final class MockContainer extends Container
-{
-}
+require __DIR__ . '/../mocks.php';
 
 test(function () {
-    $em = new EventsManager(new MockContainer());
+    $configurator = new Configurator();
+    $configurator->setTempDirectory(TEMP_DIR);
+    $configurator->addConfig(FileMock::create('
+services:
+	service1: {class: MockExceptionSubscriber, tags: [events: [test.create]]}
+	service2: {class: MockExceptionSubscriber, tags: [event.test.update]}
+', 'neon'));
 
-    $fparam = NULL;
-    $em->on('event', function ($param) use (&$fparam) {
-        $fparam = $param;
-    });
+    $configurator->onCompile[] = function (Configurator $configurator, Compiler $compiler) {
+        $compiler->addExtension('events', new EventsExtension());
+    };
 
-    $param = 'test';
-    $em->trigger('event', $param);
+    $context = $configurator->createContainer();
+    $em = $context->getByType('Minetro\Events\EventsManager');
 
-    Assert::same($param, $fparam);
-});
+    Assert::throws(function () use ($em) {
+        $em->trigger('test.create', time());
+    }, 'Nette\InvalidStateException');
 
-test(function () {
-    $em = new EventsManager(new MockContainer());
+    Assert::throws(function () use ($em) {
+        $em->trigger('test.update', time());
+    }, 'Nette\InvalidStateException');
 
-    $fparam = NULL;
-    $em->on('event.event', function ($param) use (&$fparam) {
-        $fparam = $param;
-    });
-
-    $param = 'test';
-    $em->trigger('event', $param);
-
-    Assert::notEqual($param, $fparam);
-});
-
-test(function () {
-    Assert::error(function () {
-        $em = new EventsManager(new MockContainer());
-        $em->on('event', function ($param1) {
-        });
-
-        $em->trigger('event');
-    }, E_WARNING, 'Missing argument 1 for {closure}()');
 });
