@@ -14,7 +14,7 @@ class EventsExtension extends CompilerExtension
 {
 
     /** Constants */
-    const EVENT_TAG_NAME= 'events';
+    const EVENT_TAG_NAME = 'events';
     const EVENT_TAG_PREFIX = 'event';
 
     /**

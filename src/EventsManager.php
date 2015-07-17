@@ -49,8 +49,9 @@ class EventsManager
      * Fire events
      *
      * @param string $event
+     * @param mixed  ...$args
      */
-    public function trigger($event)
+    public function trigger($event/*, ...$args*/)
     {
         if (isset($this->lazyListeners[$event])) {
             foreach ($this->lazyListeners[$event] as $name) {
