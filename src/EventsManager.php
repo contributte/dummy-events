@@ -49,34 +49,29 @@ class EventsManager
      * Fire events
      *
      * @param string $event
+     * @param mixed  ...$args
      */
-    public function trigger($event)
+    public function trigger($event/*, ...$args*/)
     {
-        $args = func_get_args();
-        array_shift($args);
-
         if (isset($this->lazyListeners[$event])) {
             foreach ($this->lazyListeners[$event] as $name) {
-                // If service is already attached, skip it
-                if (in_array($name, $this->attachedServices)) {
-                    continue;
+                if (!isset($this->attachedServices[$name])) {
+                    $this->attach($this->container->getService($name));
+                    $this->attachedServices[$name] = TRUE;
                 }
-
-                // Attach service events
-                $this->attach($this->container->getService($name));
-
-                // Add service to attached services
-                $this->attachedServices[] = $name;
             }
 
             // Unset all lazy listeners from array, cause all listeners are already attached
             unset($this->lazyListeners[$event]);
         }
 
+        if (isset($this->listeners[$event])) {
+            $args = func_get_args();
+            array_shift($args);
 
-        $listeners = isset($this->listeners[$event]) ? $this->listeners[$event] : [];
-        foreach ($listeners as $listener) {
-            call_user_func_array($listener, $args);
+            foreach ($this->listeners[$event] as $listener) {
+                call_user_func_array($listener, $args);
+            }
         }
     }
 

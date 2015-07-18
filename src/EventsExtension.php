@@ -4,7 +4,6 @@ namespace Minetro\Events;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\ServiceDefinition;
-use Nette\Utils\Strings;
 
 /**
  * EventsExtension
@@ -15,7 +14,7 @@ class EventsExtension extends CompilerExtension
 {
 
     /** Constants */
-    const EVENT_TAG_NAME= 'events';
+    const EVENT_TAG_NAME = 'events';
     const EVENT_TAG_PREFIX = 'event';
 
     /**
@@ -70,9 +69,9 @@ class EventsExtension extends CompilerExtension
 
         // Array contains other tags
         $etags = [];
-        foreach ($service->getTags() as $tag => $value) {
-            if (Strings::startsWith($tag, self::EVENT_TAG_PREFIX)) {
-                $etags[] = trim(str_replace(self::EVENT_TAG_PREFIX, NULL, $tag), '.:');
+        foreach ($tags as $tag => $value) {
+            if (strncmp($tag, self::EVENT_TAG_PREFIX, strlen(self::EVENT_TAG_PREFIX)) === 0) {
+                $etags[] = trim(substr($tag, strlen(self::EVENT_TAG_PREFIX)), '.:');
             }
         }
 
