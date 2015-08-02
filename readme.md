@@ -13,7 +13,7 @@ If you want complex events solution - there is **[Kdyby\Events](https://github.c
 ## Install
 
 ```sh
-$ composer require minetro/events:~1.2.0
+$ composer require minetro/events
 ```
 
 ## Usage
