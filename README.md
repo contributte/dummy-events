@@ -14,14 +14,15 @@ Simple events for Nette.
 
 [![Join the chat](https://img.shields.io/gitter/room/minetro/nette.svg?style=flat-square)](https://gitter.im/minetro/nette?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-If you want complex events solution - there is **[Kdyby\Events](https://github.com/kdyby/events)** for you. 
-
 ## Install
 
 ```sh
 $ composer require minetro/events
 ```
 
+## Prolog
+
+In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/event-dispatcher) :heart: for you.
 ## Usage
 
 ### Register extension
