@@ -22,7 +22,7 @@ $ composer require minetro/events
 
 ## Prolog
 
-In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/event-dispatcher) :heart: for you.
+In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/contributte/event-dispatcher) :heart: for you.
 ## Usage
 
 ### Register extension
