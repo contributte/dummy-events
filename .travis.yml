@@ -1,36 +1,52 @@
 language: php
 php:
-    - 5.4
-    - 5.5
-    - 5.6
-    - 7.0
-    - hhvm
-    - hhvm-nightly
+    - 7.1
+    - 7.2
 
-matrix:
-    allow_failures:
-        - php: hhvm
-        - php: hhvm-nightly
+before_install:
+  # turn off XDebug
+  - phpenv config-rm xdebug.ini || return 0
 
-before_script:
-    # Update Composer
-    - composer self-update
-
-    # Install Nette Tester
-    - composer install --no-interaction --prefer-source
-
-    # Coveralls
-    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then cat ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini >> ./tests/php-unix.ini; fi
-    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then NTESTER_FLAGS="--coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
+install:
+  # Composer
+  - travis_retry composer install --no-progress --prefer-dist
 
 script:
-    - vendor/bin/tester tests/Events -s -p php -c tests/php-unix.ini $NTESTER_FLAGS
+  # Nette/Tester
+  - composer run-script tester
 
-after_script:
-    # Coveralls
-    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then composer require satooshi/php-coveralls; fi
-    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php vendor/bin/coveralls -c tests/.coveralls.yml -v; fi
+jobs:
+  include:
+    - stage: Quality Assurance
+      php: 7.1
+      script:
+        - composer run-script qa
+
+    - stage: Test Coverage
+      php: 7.1
+      script:
+        - -s -p php --colors 1 -C -d extension=xdebug.so --coverage ./coverage.xml --coverage-src ./src tests/Events
+      after_script:
+        - wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
+        - php coveralls.phar --verbose --config tests/.coveralls.yml
+
+    - stage: Phpstan
+      php: 7.1
+      script:
+        - composer run-script phpstan-install
+        - composer run-script phpstan
+
+  allow_failures:
+    - stage: Test Coverage
+    - stage: Phpstan
 
 after_failure:
-    # Print *.actual content
-    - 'for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done'
+  # Print *.actual content
+  - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+

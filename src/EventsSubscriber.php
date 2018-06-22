@@ -1,18 +1,10 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Minetro\Events;
+namespace Contributte\Events;
 
-/**
- * EventsSubscriber
- *
- * @author Milan Felix Sulc <sulcmil@gmail.com>
- */
 interface EventsSubscriber
 {
 
-    /**
-     * @param EventsManager $em
-     */
-    function onEvents(EventsManager $em);
+	public function onEvents(EventsManager $em): void;
 
 }

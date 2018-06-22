@@ -8,110 +8,53 @@ Simple events for Nette.
 [![Code coverage](https://img.shields.io/coveralls/minetro/events.svg?style=flat-square)](https://coveralls.io/r/minetro/events)
 [![Downloads total](https://img.shields.io/packagist/dt/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
 [![Latest stable](https://img.shields.io/packagist/v/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
-[![HHVM Status](https://img.shields.io/hhvm/minetro/events.svg?style=flat-square)](http://hhvm.h4cc.de/package/minetro/events)
 
 ## Discussion / Help
 
 [![Join the chat](https://img.shields.io/gitter/room/minetro/nette.svg?style=flat-square)](https://gitter.im/minetro/nette?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-If you want complex events solution - there is **[Kdyby\Events](https://github.com/kdyby/events)** for you. 
-
 ## Install
 
-```sh
-$ composer require minetro/events
+```bash
+composer require contributte/events
 ```
 
-## Usage
+## Prolog
 
-### Register extension
+In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/contributte/event-dispatcher) :heart: for you.
 
-Register in your config file (e.q. config.neon).
+## Versions
 
-```neon
-extensions:
-    events: Minetro\Events\EventsExtension
-```
+| State   | Version    | Branch   | PHP     |
+|---------|------------|----------|---------|
+| dev     | dev-master | `master` | `>=7.1` |
+| dev     | `^1.3.x`   | `master` | `>=7.1` |
+| stable  | `^1.2`     | `master` | `>=5.4` |
+| stable  | `^1.1`     | `master` | `>=5.4` |
+| stable  | `^1.0`     | `master` | `>=5.4` |
 
-### Register events
+## Overview
+- [Usage - how to register DI extension](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#usage)
+  - [Register events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-events)
+  - [Register lazy events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-lazy-events)
+  - [Fire events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#fire-events)
 
-On Container compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
+## Maintainers
 
-```php
-use Minetro\Events\EventsSubscriber;
-use Minetro\Events\EventsManager;
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/f3l1x">
+            <img width="150" height="150" src="https://avatars2.githubusercontent.com/u/538058?v=3&s=150">
+        </a>
+        </br>
+        <a href="https://github.com/f3l1x">Milan Felix Šulc</a>
+      </td>
+    </tr>
+  <tbody>
+</table>
 
-class TestService implements EventsSubscriber 
-{
-    /**
-     * @param EventsManager $em
-     */
-    public function onEvents(EventsManager $em) {
-        $em->on('order.update', function($state) {
-            // Some logic..
-        });
-    }
-}
-```
+-----
 
-### Register lazy events
-
-Name tag as event name with prefix **event**.
-
-```neon
-services:
-    {class: TestService, tags: [event.order.update]}
-```
-
-Or use tag arrays with key name **events**.
-
-```neon
-services:
-    {class: TestService, tags: [events: [order.update]]}
-```
-
-This prevents usage of other tags.
-
-If **EventsSubscriber** register more events and also is lazy registered (by tags in neon). Implemented method
-`onEvents(EventsManager $em)` is called **only once**.
-
-```php
-use Minetro\Events\EventsSubscriber;
-use Minetro\Events\EventsManager;
-
-class TestSubscriber implements EventsSubscriber 
-{
-    
-    public function onEvents(EventsManager $em) {
-        $em->on('order.create', function($state) {
-            // Some logic..
-        });
-        
-        $em->on('order.update', function($state) {
-            // Some logic..
-        });
-        
-        $em->on('order.delete', function($state) {
-            // Some logic..
-        });
-    }
-}
-```
-
-### Fire events
-
-Inject to your class ultra-simple **EventsManager**.
-
-```php
-use Minetro\Events\EventsManager;
-
-/** @var EventsManager @inject **/
-public $em;
-
-public function save() {
-    // Some logic..
-    
-    // Fire order update events
-    $this->em->trigger('order.update', $order->state);
-}
-```
+Thank you for testing, reporting and contributing.

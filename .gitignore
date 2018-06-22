@@ -4,3 +4,4 @@
 /composer.lock
 /tests/*.log
 /tests/tmp
+/.idea

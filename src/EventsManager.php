@@ -1,101 +1,80 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Minetro\Events;
+namespace Contributte\Events;
 
 use Nette\DI\Container;
 
-/**
- * EventsManager
- *
- * @author Milan Felix Sulc <sulcmil@gmail.com>
- */
 class EventsManager
 {
 
-    /** @var array */
-    protected $listeners = [];
+	/** @var callable[] */
+	protected $listeners = [];
 
-    /** @var array */
-    protected $lazyListeners = [];
+	/** @var callable[] */
+	protected $lazyListeners = [];
 
-    /** @var array */
-    protected $attachedServices = [];
+	/** @var bool[] */
+	protected $attachedServices = [];
 
-    /** @var Container */
-    private $container;
+	/** @var Container */
+	private $container;
 
-    /**
-     * @param Container $container
-     */
-    function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
+	public function __construct(Container $container)
+	{
+		$this->container = $container;
+	}
 
-    /** API********************************************************************/
+	/**
+	 * Register event
+	 */
+	public function on(string $event, callable $handler): void
+	{
+		$this->listeners[$event][] = $handler;
+	}
 
-    /**
-     * Register event
-     *
-     * @param string $event
-     * @param callable $handler
-     */
-    public function on($event, $handler)
-    {
-        $this->listeners[$event][] = $handler;
-    }
+	/**
+	 * Fire events
+	 */
+	public function trigger(string $event): void
+	{
+		if (isset($this->lazyListeners[$event])) {
+			foreach ($this->lazyListeners[$event] as $name) {
+				if (!isset($this->attachedServices[$name])) {
+					$this->attach($this->container->getService($name));
+					$this->attachedServices[$name] = true;
+				}
+			}
 
-    /**
-     * Fire events
-     *
-     * @param string $event
-     * @param mixed  ...$args
-     */
-    public function trigger($event/*, ...$args*/)
-    {
-        if (isset($this->lazyListeners[$event])) {
-            foreach ($this->lazyListeners[$event] as $name) {
-                if (!isset($this->attachedServices[$name])) {
-                    $this->attach($this->container->getService($name));
-                    $this->attachedServices[$name] = TRUE;
-                }
-            }
+			// Unset all lazy listeners from array, cause all listeners are already attached
+			unset($this->lazyListeners[$event]);
+		}
 
-            // Unset all lazy listeners from array, cause all listeners are already attached
-            unset($this->lazyListeners[$event]);
-        }
+		if (isset($this->listeners[$event])) {
+			$args = func_get_args();
+			array_shift($args);
 
-        if (isset($this->listeners[$event])) {
-            $args = func_get_args();
-            array_shift($args);
+			foreach ($this->listeners[$event] as $listener) {
+				call_user_func_array($listener, $args);
+			}
+		}
+	}
 
-            foreach ($this->listeners[$event] as $listener) {
-                call_user_func_array($listener, $args);
-            }
-        }
-    }
+	/**
+	 * Attach an EventSubscriber
+	 */
+	public function attach(EventsSubscriber $subscriber): void
+	{
+		$subscriber->onEvents($this);
+	}
 
-    /**
-     * Attach subscriber and register events
-     *
-     * @param EventsSubscriber $subscriber
-     */
-    public function attach(EventsSubscriber $subscriber)
-    {
-        $subscriber->onEvents($this);
-    }
-
-    /**
-     * Attach lazy subscriber and register events
-     *
-     * @param array $events
-     * @param string $service
-     */
-    public function attachLazy(array $events, $service)
-    {
-        foreach ($events as $id => $event) {
-            $this->lazyListeners[$event][] = $service;
-        }
-    }
+	/**
+	 * Attach lazy subscriber and register events
+	 */
+	public function attachLazy(iterable $events, string $service): void
+	{
+		foreach ($events as $id => $event) {
+			$this->lazyListeners[$event][] = $service;
+		}
+	}
 
 }
