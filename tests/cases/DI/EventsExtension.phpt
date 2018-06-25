@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-use Contributte\Events\DI\EventsExtension;
-use Contributte\Events\EventsManager;
-use Contributte\Events\EventsSubscriber;
+use Contributte\DummyEvents\DI\EventsExtension;
+use Contributte\DummyEvents\EventsManager;
+use Contributte\DummyEvents\EventsSubscriber;
 use Nette\Configurator;
 use Nette\DI\Compiler;
 use Nette\DI\Container;

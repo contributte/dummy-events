@@ -2,8 +2,8 @@
 
 namespace Tests\Fixtures\Mocks\Subscribers;
 
-use Contributte\Events\EventsManager;
-use Contributte\Events\EventsSubscriber;
+use Contributte\DummyEvents\EventsManager;
+use Contributte\DummyEvents\EventsSubscriber;
 
 final class MockSubscriber implements EventsSubscriber
 {
