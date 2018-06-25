@@ -4,11 +4,10 @@ Simple events for Nette.
 
 -----
 
-[![Build Status](https://img.shields.io/travis/minetro/events.svg?style=flat-square)](https://travis-ci.org/minetro/events)
-[![Code coverage](https://img.shields.io/coveralls/minetro/events.svg?style=flat-square)](https://coveralls.io/r/minetro/events)
-[![Downloads total](https://img.shields.io/packagist/dt/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
-[![Latest stable](https://img.shields.io/packagist/v/minetro/events.svg?style=flat-square)](https://packagist.org/packages/minetro/events)
-[![HHVM Status](https://img.shields.io/hhvm/minetro/events.svg?style=flat-square)](http://hhvm.h4cc.de/package/minetro/events)
+[![Build Status](https://img.shields.io/travis/contributte/dummy-events.svg?style=flat-square)](https://travis-ci.org/contributte/dummy-events)
+[![Code coverage](https://img.shields.io/coveralls/contributte/dummy-events.svg?style=flat-square)](https://coveralls.io/r/contributte/dummy-events)
+[![Downloads total](https://img.shields.io/packagist/dt/contributte/dummy-events.svg?style=flat-square)](https://packagist.org/packages/contributte/dummy-events)
+[![Latest stable](https://img.shields.io/packagist/v/contributte/dummy-events.svg?style=flat-square)](https://packagist.org/packages/contributte/dummy-events)
 
 ## Discussion / Help
 
@@ -16,103 +15,44 @@ Simple events for Nette.
 
 ## Install
 
-```sh
-$ composer require minetro/events
+```bash
+composer require contributte/dummy-events
 ```
 
 ## Prolog
 
 In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/contributte/event-dispatcher) :heart: for you.
-## Usage
 
-### Register extension
+## Versions
 
-Register in your config file (e.q. config.neon).
+| State   | Version    | Branch   | PHP     |
+|---------|------------|----------|---------|
+| dev     | `^2.1.0`   | `master` | `>=7.1` |
+| stable  | `^2.0.0`   | `master` | `>=7.1` |
+| stable  | `^1.2.0`   | `master` | `>=5.4` |
 
-```neon
-extensions:
-    events: Minetro\Events\EventsExtension
-```
+## Overview
+- [Usage - how to register DI extension](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#usage)
+  - [Register events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-events)
+  - [Register lazy events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-lazy-events)
+  - [Fire events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#fire-events)
 
-### Register events
+## Maintainers
 
-On Container compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/f3l1x">
+            <img width="150" height="150" src="https://avatars2.githubusercontent.com/u/538058?v=3&s=150">
+        </a>
+        </br>
+        <a href="https://github.com/f3l1x">Milan Felix Šulc</a>
+      </td>
+    </tr>
+  <tbody>
+</table>
 
-```php
-use Minetro\Events\EventsSubscriber;
-use Minetro\Events\EventsManager;
+-----
 
-class TestService implements EventsSubscriber 
-{
-    /**
-     * @param EventsManager $em
-     */
-    public function onEvents(EventsManager $em) {
-        $em->on('order.update', function($state) {
-            // Some logic..
-        });
-    }
-}
-```
-
-### Register lazy events
-
-Name tag as event name with prefix **event**.
-
-```neon
-services:
-    {class: TestService, tags: [event.order.update]}
-```
-
-Or use tag arrays with key name **events**.
-
-```neon
-services:
-    {class: TestService, tags: [events: [order.update]]}
-```
-
-This prevents usage of other tags.
-
-If **EventsSubscriber** register more events and also is lazy registered (by tags in neon). Implemented method
-`onEvents(EventsManager $em)` is called **only once**.
-
-```php
-use Minetro\Events\EventsSubscriber;
-use Minetro\Events\EventsManager;
-
-class TestSubscriber implements EventsSubscriber 
-{
-    
-    public function onEvents(EventsManager $em) {
-        $em->on('order.create', function($state) {
-            // Some logic..
-        });
-        
-        $em->on('order.update', function($state) {
-            // Some logic..
-        });
-        
-        $em->on('order.delete', function($state) {
-            // Some logic..
-        });
-    }
-}
-```
-
-### Fire events
-
-Inject to your class ultra-simple **EventsManager**.
-
-```php
-use Minetro\Events\EventsManager;
-
-/** @var EventsManager @inject **/
-public $em;
-
-public function save() {
-    // Some logic..
-    
-    // Fire order update events
-    $this->em->trigger('order.update', $order->state);
-}
-```
+Thank you for testing, reporting and contributing.
