@@ -50,7 +50,7 @@ In case you're looking for a complex solution like [Symfony\EventDispatcher](htt
         <a href="https://github.com/f3l1x">Milan Felix Šulc</a>
       </td>
     </tr>
-  <tbody>
+  </tbody>
 </table>
 
 -----
