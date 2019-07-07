@@ -15,7 +15,7 @@ Simple events for Nette.
 
 Register in your config file (e.q. config.neon).
 
-```neon
+```yaml
 extensions:
     events: Contributte\DummyEvents\DI\EventsExtension
 ```
@@ -45,14 +45,14 @@ class TestService implements EventsSubscriber
 
 Name tag as event name with prefix **event**.
 
-```neon
+```yaml
 services:
     {class: TestService, tags: [event.order.update]}
 ```
 
 Or use tag arrays with key name **events**.
 
-```neon
+```yaml
 services:
     {class: TestService, tags: [events: [order.update]]}
 ```
