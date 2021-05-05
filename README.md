@@ -1,58 +1,133 @@
-# Events
+![](https://heatbadger.now.sh/github/readme/contributte/dummy-events/?deprecated=1)
 
-Simple events for Nette.
+<p align=center>
+    <a href="https://bit.ly/ctteg"><img src="https://badgen.net/badge/support/gitter/cyan"></a>
+    <a href="https://bit.ly/cttfo"><img src="https://badgen.net/badge/support/forum/yellow"></a>
+    <a href="https://contributte.org/partners.html"><img src="https://badgen.net/badge/sponsor/donations/F96854"></a>
+</p>
 
------
+<p align=center>
+    Website 🚀 <a href="https://contributte.org">contributte.org</a> | Contact 👨🏻‍💻 <a href="https://f3l1x.io">f3l1x.io</a> | Twitter 🐦 <a href="https://twitter.com/contributte">@contributte</a>
+</p>
 
-[![Build Status](https://img.shields.io/travis/contributte/dummy-events.svg?style=flat-square)](https://travis-ci.org/contributte/dummy-events)
-[![Code coverage](https://img.shields.io/coveralls/contributte/dummy-events.svg?style=flat-square)](https://coveralls.io/r/contributte/dummy-events)
-[![Downloads total](https://img.shields.io/packagist/dt/contributte/dummy-events.svg?style=flat-square)](https://packagist.org/packages/contributte/dummy-events)
-[![Latest stable](https://img.shields.io/packagist/v/contributte/dummy-events.svg?style=flat-square)](https://packagist.org/packages/contributte/dummy-events)
+## Disclaimer
 
-## Discussion / Help
+| :warning: | This project is no longer being maintained. Please use [contributte/event-dispatcher](https://github.com/contributte/event-dispatcher).
+|---|---|
 
-[![Join the chat](https://img.shields.io/gitter/room/minetro/nette.svg?style=flat-square)](https://gitter.im/minetro/nette?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+| Composer | [`contributte/dummy-events`](https://packagist.org/packages/contributte/dummy-events) |
+|---| --- |
+| Version | ![](https://badgen.net/packagist/v/contributte/dummy-events) |
+| PHP | ![](https://badgen.net/packagist/php/contributte/dummy-events) |
+| License | ![](https://badgen.net/github/license/contributte/dummy-events) |
 
-## Install
+## Documentation
 
-```bash
-composer require contributte/dummy-events
+## Usage
+
+### Register extension
+
+Register in your config file (e.q. config.neon).
+
+```yaml
+extensions:
+    events: Contributte\DummyEvents\DI\EventsExtension
 ```
 
-## Prolog
+### Register events
 
-In case you're looking for a complex solution like [Symfony\EventDispatcher](https://github.com/symfony/event-dispatcher) so there is a great up-to-date adaptation :tada:  [contributte\event-dispatcher](https://github.com/contributte/event-dispatcher) :heart: for you.
+On Container compile - **EventsExtension** collect all services which implement **EventsSubscriber** and call their `onEvents($em)` method.
 
-## Versions
+```php
+use Contributte\DummyEvents\EventsSubscriber;
+use Contributte\DummyEvents\EventsManager;
 
-| State   | Version    | Branch   | PHP     |
-|---------|------------|----------|---------|
-| dev     | `^2.1.0`   | `master` | `>=7.1` |
-| stable  | `^2.0.0`   | `master` | `>=7.1` |
-| stable  | `^1.2.0`   | `master` | `>=5.4` |
+class TestService implements EventsSubscriber 
+{
+    /**
+     * @param EventsManager $em
+     */
+    public function onEvents(EventsManager $em) {
+        $em->on('order.update', function($state) {
+            // Some logic..
+        });
+    }
+}
+```
 
-## Overview
-- [Usage - how to register DI extension](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#usage)
-  - [Register events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-events)
-  - [Register lazy events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#register-lazy-events)
-  - [Fire events](https://github.com/contributte/dummy-events/blob/master/.docs/README.md#fire-events)
+### Register lazy events
 
-## Maintainers
+Name tag as event name with prefix **event**.
 
-<table>
-  <tbody>
-    <tr>
-      <td align="center">
-        <a href="https://github.com/f3l1x">
-            <img width="150" height="150" src="https://avatars2.githubusercontent.com/u/538058?v=3&s=150">
-        </a>
-        </br>
-        <a href="https://github.com/f3l1x">Milan Felix Šulc</a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+```yaml
+services:
+    {class: TestService, tags: [event.order.update]}
+```
+
+Or use tag arrays with key name **events**.
+
+```yaml
+services:
+    {class: TestService, tags: [events: [order.update]]}
+```
+
+This prevents usage of other tags.
+
+If **EventsSubscriber** register more events and also is lazy registered (by tags in neon). Implemented method
+`onEvents(EventsManager $em)` is called **only once**.
+
+```php
+use Contributte\DummyEvents\EventsSubscriber;
+use Contributte\DummyEvents\EventsManager;
+
+class TestSubscriber implements EventsSubscriber 
+{
+    
+    public function onEvents(EventsManager $em) {
+        $em->on('order.create', function($state) {
+            // Some logic..
+        });
+        
+        $em->on('order.update', function($state) {
+            // Some logic..
+        });
+        
+        $em->on('order.delete', function($state) {
+            // Some logic..
+        });
+    }
+}
+```
+
+### Fire events
+
+Inject to your class ultra-simple **EventsManager**.
+
+```php
+use Contributte\DummyEvents\EventsManager;
+
+/** @var EventsManager @inject **/
+public $em;
+
+public function save() {
+    // Some logic..
+    
+    // Fire order update events
+    $this->em->trigger('order.update', $order->state);
+}
+```
+
+
+
+## Development
+
+This package was maintain by these authors.
+
+<a href="https://github.com/f3l1x">
+  <img width="80" height="80" src="https://avatars2.githubusercontent.com/u/538058?v=3&s=80">
+</a>
 
 -----
 
-Thank you for testing, reporting and contributing.
+Consider to [support](https://contributte.org/partners.html) **contributte** development team.
+Also thank you for being used this package.
