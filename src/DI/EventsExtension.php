@@ -18,7 +18,7 @@ class EventsExtension extends CompilerExtension
 		$container = $this->getContainerBuilder();
 
 		$container->addDefinition($this->prefix('manager'))
-			->setClass(EventsManager::class);
+			->setType(EventsManager::class);
 	}
 
 	public function beforeCompile(): void
