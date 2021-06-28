@@ -6,13 +6,8 @@ install:
 qa:
 	vendor/bin/linter src tests
 
-phpstan-install:
-	mkdir -p temp/phpstan
-	composer require -d temp/phpstan phpstan/phpstan:0.9.2
-	composer require -d temp/phpstan phpstan/phpstan-nette:0.9
-
 phpstan:
-	temp/phpstan/vendor/bin/phpstan analyse -l max -c phpstan.neon src
+	vendor/bin/phpstan analyse -l max -c phpstan.neon src
 
 tests:
 	vendor/bin/tester -s -p php --colors 1 -C tests/cases
